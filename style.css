@@ -1,0 +1,21 @@
+body{
+    display: flex;
+    flex-direction: row;
+}
+#map{
+    flex: 1;
+}
+
+
+
+.yaxis path, .yaxis line, .xaxis path, .xaxis line{
+    fill: none;
+    stroke: #969696;
+    shape-rendering: crispEdges;
+    stroke-width: 1px;
+    
+}
+
+#population text{
+    padding:5em;
+}
