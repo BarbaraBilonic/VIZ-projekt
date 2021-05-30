@@ -19,3 +19,12 @@ body{
 #population text{
     padding:5em;
 }
+
+.tootlip{
+    position:absolute;
+    text-align: center;
+    border:1px solid #ccc8c8;
+    background: white;
+    font-size:1em;
+
+}

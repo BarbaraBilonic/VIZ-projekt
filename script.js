@@ -1,7 +1,7 @@
 
 
 var colors=d3.scale.linear().domain([500000,80000000]).range(["white","black"])
-
+		var year=9;
 		let country_data;
 		fetch("country_data.json")
 		.then(response=>{return response.json();})
@@ -17,10 +17,13 @@ var colors=d3.scale.linear().domain([500000,80000000]).range(["white","black"])
 		var popGraphHeight=400;
 		var barPadding=10;
 		var barWidth=popGraphWidth/10-barPadding;
-		var pieChartWidth=300;
-		var pieChartHeight=300;
+		var pieChartWidth=600;
+		var pieChartHeight=500;
 		var pieChartMargin=30;
-		var radius=Math.min(pieChartWidth,pieChartHeight)/2-pieChartMargin
+		var radius=120;
+		var arc=d3.svg.arc()
+			.innerRadius(80)
+			.outerRadius(radius)
 	    var projection = d3.geo.mercator()
 	    .center([5, 55])
 	    .scale(550)
@@ -55,6 +58,16 @@ var colors=d3.scale.linear().domain([500000,80000000]).range(["white","black"])
 							.domain([2010,2011,2012,2013,2014,2015,2016,2017,2018,2019])
 							.rangeRoundBands([0,popGraphWidth],.5);
 		
+		var barchartDiv=d3.select("#population").append("div")
+						.attr("class","tootlip")
+						.style("opacity",0);
+		var pieDiv=d3.select("#pie").append("div")
+						.attr("class","tootlip")
+						.style("opacity",0); 	
+		var mapDiv=d3.select("#map").append("div")
+						.attr("class","tootlip")
+						.style("opacity",0); 				
+		
 
 	function dataReady(data){
 		country_data=data;
@@ -82,12 +95,30 @@ var colors=d3.scale.linear().domain([500000,80000000]).range(["white","black"])
 			
 			if(getCountryData(d.properties.adm0_a3)!=null){
 			d3.select(this).style("fill","#eeffc4");
+			d3.select(this).transition()
+				.duration(50)
+				.attr("opacity",.85);
+			mapDiv.transition()
+				.duration(50)
+				.style("opacity",1);
+			var country=getCountryData(d.properties.adm0_a3);
+			let num=country.country_name+"\n"+"Population: "+country.population[year];
+				mapDiv.html(num)
+				.style("left", (d3.event.pageX + 10) + "px")
+				.style("top", (d3.event.pageY - 15) + "px");
 			}
+			
 		})
 		.on("mouseout",function(d){
 			if(getCountryData(d.properties.adm0_a3)!=null){
 				d3.select(this).style("fill",function(d){return getColor(d.properties.adm0_a3,9)});
-				}
+				d3.select(this).transition()
+				.duration(50)
+				.attr("opacity",1);
+				mapDiv.transition()
+				.duration(50)
+				.style("opacity",0);
+			}
 		})
 		.on("click",function(d){
 			var country=getCountryData(d.properties.adm0_a3);
@@ -137,6 +168,12 @@ var colors=d3.scale.linear().domain([500000,80000000]).range(["white","black"])
 			.on("mouseout",function(d){
 				if(getCountryData(d.properties.adm0_a3)!=null){
 					d3.select(this).style("fill",function(d){return getColor(d.properties.adm0_a3,index)});
+					d3.select(this).transition()
+					.duration(50)
+					.attr("opacity",1);
+					mapDiv.transition()
+					.duration(50)
+					.style("opacity",0);
 					}
 			});
 		
@@ -183,11 +220,29 @@ var colors=d3.scale.linear().domain([500000,80000000]).range(["white","black"])
 			.attr("height", 100)
 			.attr("width",barWidth)
 			.attr("fill","#7bafc7")
-			.on("mouseover", function(){
+			.on("mouseover", function(d,i){
 				d3.select(this).attr("fill","#b8e1f5");
+				d3.select(this).transition()
+					.duration(50)
+					.attr("opacity",0.85);
+				barchartDiv.transition()
+					.duration(50)
+					.style("opacity",1);
+				let num=d;
+				barchartDiv.html(num)
+					.style("left",(d3.event.pageX+10)+"px")
+					.style("top",(d3.event.pageY-15)+"px")
 			})
-			.on("mouseout",function(){d3.select(this).attr("fill","#7bafc7");})
-			.on("click",function(d,i){changeMap(i); updatePieChart(d.country_code,i);});
+			.on("mouseout",function(d,i){
+				d3.select(this).attr("fill","#7bafc7");
+				d3.select(this).transition()
+					.duration(50)
+					.attr("opacity",1);
+				barchartDiv.transition()
+					.duration(50)
+					.style("opacity",0);
+			})
+			.on("click",function(d,i){changeMap(i); updatePieChart(countryCode,i); year=i;});
 		
 			popGraphSvg.selectAll("rect")
 				
@@ -221,8 +276,31 @@ var colors=d3.scale.linear().domain([500000,80000000]).range(["white","black"])
 			.attr("fill", function(d,i){
 				if(i===0) return "yellow";
 				else return "green";
-			})
+			});
+	chart
+			.on("mouseover",function(d,i){
+				d3.select(this).transition()
+					.duration(50)
+					.attr("opacity",.85);
+				pieDiv.transition()
+					.duration(50)
+					.style("opacity",1);
+				let num=d.value+"%";
+				pieDiv.html(num)
+					.style("left", (d3.event.pageX + 10) + "px")
+					.style("top", (d3.event.pageY - 15) + "px");
 
+			})
+			.on("mouseout",function(d){
+				d3.select(this).transition()
+					.duration(50)
+					.attr("opacity",1);
+				pieDiv.transition()
+					.duration(50)
+					.style("opacity",0);
+			});
+			
+		
 	}
 
 	function createPieChart(countryCode,index){
@@ -238,16 +316,40 @@ var colors=d3.scale.linear().domain([500000,80000000]).range(["white","black"])
 		chart
 				.transition()
 				.duration(1000)
-				.attr("d",d3.svg.arc()
-						.innerRadius(80)
-						.outerRadius(radius)
-					)
+				.attr("d",arc)
 				.attr("fill", function(d,i){
 					if(i===0) return "yellow";
 					else return "green";
 				})
 	
-				
+		
+		chart
+			.on("mouseover",function(d,i){
+				d3.select(this).transition()
+					.duration(50)
+					.attr("opacity",.85);
+				pieDiv.transition()
+					.duration(50)
+					.style("opacity",1);
+				let num=d.value+"%";
+				pieDiv.html(num)
+					.style("left", (d3.event.pageX + 10) + "px")
+					.style("top", (d3.event.pageY - 15) + "px");
+
+			})
+			.on("mouseout",function(d){
+				d3.select(this).transition()
+					.duration(50)
+					.attr("opacity",1);
+				pieDiv.transition()
+					.duration(50)
+					.style("opacity",0);
+			});		
+	
+		pieSvg.append("circle").attr("cx",150).attr("cy",0).attr("r", 6).style("fill", "yellow")
+		pieSvg.append("circle").attr("cx",150).attr("cy",30).attr("r", 6).style("fill", "green")
+		pieSvg.append("text").attr("x", 160).attr("y", 5).text("Urban population (%)").style("font-size", "15px").attr("alignment-baseline","middle")
+		pieSvg.append("text").attr("x", 160).attr("y", 35).text("Rural population (%)").style("font-size", "15px").attr("alignment-baseline","middle")
 
 
 
