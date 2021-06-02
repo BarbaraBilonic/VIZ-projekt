@@ -1,6 +1,6 @@
 
 
-var colors=d3.scale.linear().domain([500000,80000000]).range(["white","black"])
+var colors=d3.scale.linear().domain([500000,90000000]).range([ "#dddcef","#111023"])
 		var year=9;
 		let country_data;
 		fetch("country_data.json")
@@ -66,16 +66,16 @@ var colors=d3.scale.linear().domain([500000,80000000]).range(["white","black"])
 						.style("opacity",0); 	
 		var mapDiv=d3.select("#map").append("div")
 						.attr("class","tootlip")
-						.style("opacity",0); 				
-		
-
+						.style("opacity",0); 
+		createLegend()
+						  
+			
+ 
 	function dataReady(data){
 		country_data=data;
 		createMap();
-		
-	}
- 
-
+							
+						}
   
 
 	function createMap(){
@@ -380,3 +380,73 @@ var colors=d3.scale.linear().domain([500000,80000000]).range(["white","black"])
 			else	{return null;}
 				
 		}
+
+
+function createLegend(){
+	var legendWidth = 400;
+	var legendHeight = 50;
+
+	var legendSvg = d3.select("#legend")
+						.append("svg")
+						.attr("width", 500)
+						.attr("height", legendHeight);
+					
+	var legend = legendSvg.append("defs")
+						.append("svg:linearGradient")
+						.attr("id", "gradient")
+						.attr("x1", "0%")
+						.attr("y1", "100%")
+						.attr("x2", "100%")
+						.attr("y2", "100%")
+						.attr("spreadMethod", "pad");
+					
+	legend.append("stop")
+				.attr("offset", "0%")
+				.attr("stop-color", colors(1000000))
+				 .attr("stop-opacity", 1);
+					
+	legend.append("stop")
+				.attr("offset", "33%")
+				.attr("stop-color", colors(20000000))
+				.attr("stop-opacity", 1);
+					
+	legend.append("stop")
+				.attr("offset", "66%")
+				.attr("stop-color", colors(50000000))
+				.attr("stop-opacity", 1);
+					
+	legend.append("stop")
+				.attr("offset", "100%")
+				.attr("stop-color", colors(89000000))
+				.attr("stop-opacity", 1);
+					
+	legendSvg.append("rect")
+			.attr("width", legendWidth)
+			.attr("height", legendHeight - 30)
+			.style("fill", "url(#gradient)")
+			.attr("transform", "translate(0,10)")
+			.attr("x",20);
+					
+	var y = d3.scale.linear()
+					.range([420, 20])
+					.domain([90,0.5]);
+					
+	var yAxis = d3.svg.axis()
+				.orient("bottom")
+				 .scale(y)
+				.tickValues(y.domain())
+				.tickFormat(function(d){return d+"mil"});
+					
+	legendSvg.append("g")
+			.attr("class", "y axis")
+			.attr("transform", "translate(0,30)")
+			.call(yAxis)
+			.attr("x",10)
+			.append("text")
+			.attr("transform", "rotate(-90)")
+			.attr("y", 0)
+			.attr("dy", ".71em")
+			.style("text-anchor", "end")
+}
+
+	
