@@ -1,11 +1,28 @@
 body{
     display: flex;
-    flex-direction: row;
-}
-#map{
-    flex: 1;
+    flex-direction: column;
+    font-family: 'Roboto', sans-serif;
+    
 }
 
+#lower-container{
+    display: flex;
+    flex-direction: row;
+}
+#map-container{
+    margin:20px;
+}
+
+h1,h3{
+    font-weight: 200;
+    text-align: center;
+}
+
+
+h1{
+    text-align: center;
+    margin-bottom: 100px;
+}
 
 
 .yaxis path, .yaxis line, .xaxis path, .xaxis line{
@@ -27,4 +44,72 @@ body{
     background: white;
     font-size:1em;
 
+}
+#pie-form-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#pie-container{
+    margin-left:5em;
+    display: flex;
+    flex-direction: column;
+}
+form{
+    display: flex;
+    flex-direction: row;
+    
+}
+input{
+    margin:1em;
+}
+#input-container{
+    display: flex;
+    flex-direction: row;
+}
+
+p{
+    font-size: 12px;
+    padding-left: 1.5em;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-right: 0;
+    margin:0;
+    
+}
+
+.m-container{
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+#lower{
+    margin-bottom: 5px;
+}
+#upper{
+    margin-bottom: 5px;
+}
+
+#filter-btn, #reset-filter{
+    padding:10px;
+    background: #dedede;
+    color: #303030;
+    border: 1px solid #6e6e6e;
+    border-radius: 4px;
+    margin:5px 6px 6px 6px;
+}
+
+#button-container{
+   
+    align-items: center;
+}
+
+#pie_title{
+    margin-top:30px;
+}
+
+#back{
+    background: white;
+    color:blue;
+    border:white;
 }

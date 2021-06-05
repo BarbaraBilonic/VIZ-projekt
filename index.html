@@ -1,42 +1,84 @@
-	<!DOCTYPE html>
-	<html>
-	<head>
-	<script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
-	<script src="http://d3js.org/topojson.v1.min.js"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/d3-legend/1.1.0/d3-legend.js"></script>
-	
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3-legend/1.1.0/d3-legend.js"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;700&display=swap" rel="stylesheet">
 
-	
-	<link rel="stylesheet" href="style.css">
-	
 
-    <link rel="shortcut icon" href="#">
-    
-	</head>
-	<body>
-	<h1>European Union Population</h1>
-	<div id="map-container">
-	<div id="map"></div>
-	<div id="legend"></div>
+
+
+
+<link rel="stylesheet" href="style.css">
+
+
+<link rel="shortcut icon" href="#">
+
+</head>
+<body>
+
+
+<h1>European Union Population</h1>
+
+
+
+
+
+
+
+<div id="lower-container">
+<div id="map-container">
+	<div id="year"><h3>2019</h3></div>
+<div id="map"></div>
+<div id="legend"></div>
+</div>
+
+
+<div id="graphs">
+	<button id="back" type="button">Back to all countries</button>
+	<div id="country_name"><h3>European Union Countries</h3></div>
+	
+	<div id="population"></div>
+	<div id=pie-form-container>
+	<form>
+		<div id="input-container">
+		<div class="m-container">
+		<p id="lower-min-p"></p>
+		<input type="number" id="lower" name="lower">
+		</div>
+		<div class="m-container">
+		<p id="lower-max-p"></p>
+		<input type="number" id="upper" name="upper">
+		</div>
+		</div>
+		
+		<div id="button-container">
+		<button type="button" id="filter-btn">Filter</button>
+		<button type="button" id="reset-filter">Reset filter</button>
+		</div>
+	</form>
+	<div id="pie-container">
+	<div id="pie_title"></div>
+	<div id="pie"></div>
 	</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<script src="script.js"></script>
 	
-	<div id="graphs">
-		<div id="population"></div>
-		<div id="pie"></div>
-	</div>
+</body>
+</html>
 
-
-
-
-
-
-
-
-
-
-
-	<script src="script.js"></script>
-	    
-	</body>
-    </html>
