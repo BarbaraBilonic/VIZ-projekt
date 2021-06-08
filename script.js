@@ -16,7 +16,7 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 		let map_data;
 		var countries;	
 		var barchart;
-	    var mapWidth = 430;
+	    var mapWidth = 540;
 	    var mapHeight = 700;
 		var popGraphWidth=700;
 		var popGraphHeight=350;
@@ -27,6 +27,7 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 		var pieChartHeight=300;
 		var pieChartMargin=30;
 		var radius=120;
+		var popChartMarginTop=40;
 		var arc=d3.svg.arc()
 			.innerRadius(80)
 			.outerRadius(radius)
@@ -73,6 +74,22 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 		var mapDiv=d3.select("#map").append("div")
 						.attr("class","tootlip")
 						.style("opacity",0); 
+	var legendWidth = 400;
+	var legendHeight = 50;
+
+	var legendSvg = d3.select("#legend")
+						.append("svg")
+						.attr("width", 600)
+						.attr("height", 100);
+					
+	var legend = legendSvg.append("defs")
+						.append("svg:linearGradient")
+						.attr("id", "gradient")
+						.attr("x1", "0%")
+						.attr("y1", "100%")
+						.attr("x2", "100%")
+						.attr("y2", "100%")
+						.attr("spreadMethod", "pad");
 		createLegend()
 						  
 			
@@ -99,26 +116,33 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 		upper=d3.max(country_data.map(function(d){return d3.max(d.population.map(function(e){return e;}))}));
 		document.querySelector("#lower-min-p").innerHTML=`Min (${lower})`;	
 		document.querySelector("#lower-max-p").innerHTML=`Max (${upper})`;
+		document.querySelector("#back").disabled=true;
+		document.querySelector("#back").setAttribute("style","color:white");
+
 							
 						}
 	function backButtonClicked(){
 		all=1;
-		createGraph();
+		document.querySelector("#back").disabled=true;
+		document.querySelector("#back").setAttribute("style","color:white");
+		
 		document.querySelector("#country_name").innerHTML=`<h3>European Union Countries<h3>`
 		year=9;
 		filterCountries();
-		document.querySelector("#year").innerHTML=`<h3>${years[year]}</h3>`;
+		createGraph();
+		
+		document.querySelector("#year").innerHTML=`<h3>Year: ${years[year]}</h3>`;
 		removePieChart();
 	}
 	function filterButtonClicked(){
 		
 		upper=document.querySelector("#upper").value;
 		lower=document.querySelector("#lower").value;
-		
+		changeLegend();
 		filterCountries();
 		
 		colors.domain([lower,upper]);
-		console.log(all);
+		
 		if(all===1){
 		createGraph();
 		
@@ -133,7 +157,7 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 			upper=document.querySelector("#upper").value;
 			lower=document.querySelector("#lower").value;
 			filterCountries();
-			
+			changeLegend();
 			colors.domain([lower,upper]);
 		
 			if(all===1){
@@ -250,22 +274,24 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 		barchart
 		.data(country.population.map(function(d){return [d,country.country_code]}))
 		.attr("x",function(d,i){return xScaleYears(years[i]);})	
-		.attr("y",300)
-		.attr("height", 100);
+		.attr("y",0)
+		.attr("height", 0);
 
 		popGraphSvg.selectAll("rect")
 				.transition()
 				.duration(800)
 				.attr("y", function(d){return yScalepopGraph(d[0]);})
 				.attr("height",function(d){return popGraphHeight-yScalepopGraph(d[0]); })
-				.delay(function(d,i){console.log(i) ; return(i*100)})
+				.delay(function(d,i){ return(i*100)})
 		
 		
 	}
 
 	function createCountryBarchart(country){
 		all=0;
-		
+		document.querySelector("#back").disabled=false;
+		document.querySelector("#back").setAttribute("style","color:blue");
+			
 		popGraphSvg.selectAll("*").remove();
 		var yScalepopGraph=d3.scale.linear()
 			.domain([0,d3.max(country.population.map(function(d){return d;}))])
@@ -282,18 +308,19 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 
 		popGraphSvg.append("g")
 			.attr("class","xaxis")
-			.attr("transform","translate(0,"+popGraphHeight+")")
+			.attr("transform","translate(0,"+(popGraphHeight+popChartMarginTop)+")")
 			.call(popGraphXAxis)
 			.selectAll("text")
 			.style("text-anchor", "middle")
 			
-		popGraphSvg.append("g")
+			popGraphSvg.append("g")
 			.attr("class", "yaxis")
+			.attr("transform","translate(0,"+popChartMarginTop+")")
 			.call(popGraphYAxis)
 			.append("text")
 			.style("text-anchor","end")
-			.attr("x",0)
-			.attr("y",0)
+			.attr("x",-100)
+			.attr("y",-90.5)
 			.text("population")
 			.attr("transform","rotate(-90)");
 		
@@ -301,8 +328,9 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 			.data(country.population.map(function(d){return [d,country.country_code]}))
 			.enter()
 			.append("rect")
+			.attr("transform","translate(0,"+popChartMarginTop+")")
 			.attr("x",function(d,i){return xScaleYears(years[i]);})	
-			.attr("y",300)
+			.attr("y",0)
 			.attr("height", 0)
 			.attr("width",barWidthOneCountry)
 			.attr("fill","#7bafc7")
@@ -329,9 +357,10 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 					.style("opacity",0);
 			})
 			.on("click",function(d,i){
-				changeMap(i); year=i;
-				document.querySelector("#year").innerHTML=`<h3>${years[year]}</h3>`;
-				console.log(d[1]);
+				year=i;
+				filterCountries();
+				changeMap(year); 
+				document.querySelector("#year").innerHTML=`<h3>Year:${years[year]}</h3>`;
 				updatePieChart(d[1],i);
 
 			 });
@@ -347,7 +376,7 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 	}
 
 	function changeMap(index){
-		filterCountries();
+		
 		countries
 			.data(map_data.features)
 			.style("fill", function(d){return getColor(d.properties.adm0_a3,index);})
@@ -366,6 +395,7 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 	}
 	function createGraph(){
 		all=1;
+		document.querySelector("#back").disabled=true;
 		var c=country_data.filter(element=>element.isIncluded===1)
 		if(c.length<5){
 		barWidthAllCountries=popGraphWidth/c.length-150;
@@ -379,15 +409,13 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 		popGraphSvg.selectAll("*").remove();
 		var c=country_data.filter(
 			element=>element.isIncluded===1);
-			console.log(c);
-		console.log("bbbbbbbbb");
 		var yScale=d3.scale.linear()
 			.domain([0,d3.max(c.map(function(d){return d.population[9];}))])
 						.range([popGraphHeight,0]);
 		var xScale=d3.scale.ordinal()
 		.domain(c.map(function(d){return d.country_name;}))
 						.rangeRoundBands([0,popGraphWidth],.5);
-		console.log(xScale);
+		
 		var popGraphXAxis=d3.svg.axis()
 					.scale(xScale)
 					.orient("bottom");
@@ -399,7 +427,8 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 
 		popGraphSvg.append("g")
 			.attr("class","xaxis")
-			.attr("transform","translate(0,"+popGraphHeight+")")
+			.attr("transform","translate(0,"+(popGraphHeight+popChartMarginTop)+")")
+			.attr("y",50)
 			.call(popGraphXAxis)
 			.selectAll("text")
 			.style("text-anchor", "end")
@@ -408,11 +437,12 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 			
 		popGraphSvg.append("g")
 			.attr("class", "yaxis")
+			.attr("transform","translate(0,"+popChartMarginTop+")")
 			.call(popGraphYAxis)
 			.append("text")
 			.style("text-anchor","end")
-			.attr("x",0)
-			.attr("y",0)
+			.attr("x",-100)
+			.attr("y",-90.5)
 			.text("population")
 			.attr("transform","rotate(-90)");
 		
@@ -420,6 +450,7 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 			.data(c)
 			.enter()
 			.append("rect")
+			.attr("transform","translate(0,"+popChartMarginTop+")")
 			.attr("x",function(d){return xScale(d.country_name);})	
 			.attr("y",0)
 			.attr("height", 0)
@@ -449,7 +480,7 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 					.style("opacity",0);
 				changeMap(9);
 			})
-			.on("click",function(d,i){ changeMap(i);
+			.on("click",function(d,i){ 
 				document.querySelector("#country_name").innerHTML=`<h3>${d.country_name}</h3>`;
 				 createCountryBarchart(d);
 				createPieChart(d.country_code,i);});
@@ -471,7 +502,6 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 		document.querySelector("#pie_title").innerHTML=`<h3></h3>`;
 	}
 	function updatePieChart(countryCode,index){
-			console.log(countryCode);
 			chart.remove();
 			var country=getCountryData(countryCode);
 			document.querySelector("#pie_title").innerHTML=`Percentage of rural and urban population for ${country.country_name} in ${years[year]}`;
@@ -600,22 +630,7 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 
 
 function createLegend(){
-	var legendWidth = 400;
-	var legendHeight = 50;
-
-	var legendSvg = d3.select("#legend")
-						.append("svg")
-						.attr("width", 500)
-						.attr("height", legendHeight);
-					
-	var legend = legendSvg.append("defs")
-						.append("svg:linearGradient")
-						.attr("id", "gradient")
-						.attr("x1", "0%")
-						.attr("y1", "100%")
-						.attr("x2", "100%")
-						.attr("y2", "100%")
-						.attr("spreadMethod", "pad");
+	
 					
 	legend.append("stop")
 				.attr("offset", "0%")
@@ -642,11 +657,11 @@ function createLegend(){
 			.attr("height", legendHeight - 30)
 			.style("fill", "url(#gradient)")
 			.attr("transform", "translate(0,10)")
-			.attr("x",20);
+			.attr("x",40);
 					
 	var y = d3.scale.linear()
-					.range([420, 20])
-					.domain([90,0.5]);
+					.range([440, 40])
+					.domain([84,0.4]);
 					
 	var yAxis = d3.svg.axis()
 				.orient("bottom")
@@ -655,15 +670,71 @@ function createLegend(){
 				.tickFormat(function(d){return d+"mil"});
 					
 	legendSvg.append("g")
-			.attr("class", "y axis")
+			.attr("class", "yAxis")
 			.attr("transform", "translate(0,30)")
 			.call(yAxis)
 			.attr("x",10)
 			.append("text")
 			.attr("transform", "rotate(-90)")
 			.attr("y", 0)
-			.attr("dy", ".71em")
+			.attr("dy", ".5em")
 			.style("text-anchor", "end")
 }
 
+function changeLegend(){
+	var l=getLowerValue();
+	var u=getUpperValue();
+	legendSvg.selectAll(".yAxis").remove();
+	var y = d3.scale.linear()
+					.range([440, 40])
+					.domain([u,l]);
+					var yAxis = d3.svg.axis()
+					.orient("bottom")
+					 .scale(y)
+					.tickValues(y.domain())
+					.tickFormat(function(d){
+						if(d>=1){return d.toFixed(0)+"mil";}
+						else return d.toFixed(1)+"mil";});
+						
+		legendSvg.append("g")
+				.attr("class", "yAxis")
+				.attr("transform", "translate(0,30)")
+				.call(yAxis)
+				.attr("x",10)
+				.append("text")
+				.attr("transform", "rotate(-90)")
+				.attr("y", 0)
+				.attr("dy", ".71em")
+				.style("text-anchor", "end")
 	
+}
+	
+function getUpperValue(){
+	var value=upper;
+	var i=0;
+
+	while(i<6){
+		value/=10;
+			i++;
+		}
+	if(upper%10!=0){
+	return value+1;
+		}
+	else {return value;}
+
+
+}
+function getLowerValue(){
+	var value=lower;
+	var i=0;
+	
+		while(i<6)
+		{
+			value/=10;
+			i++;
+		}
+		
+	return value;
+
+
+}
