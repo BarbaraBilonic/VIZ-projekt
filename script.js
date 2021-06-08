@@ -47,7 +47,7 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 		var popGraphSvg= d3.select("#population")
 		.append("svg")
 		.attr("width", popGraphWidth + 150)
-		.attr("height", popGraphHeight + 100)
+		.attr("height", popGraphHeight + 200)
 		.style("background-color", "white")
 		.append("g")
 		.attr("transform", "translate(" + 100 + "," +0 +")");
