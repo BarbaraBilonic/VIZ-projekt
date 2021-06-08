@@ -482,6 +482,10 @@ var colors=d3.scale.linear().domain([500000,90000000]).range([ "#eafaf1","#14916
 			})
 			.on("click",function(d,i){ 
 				document.querySelector("#country_name").innerHTML=`<h3>${d.country_name}</h3>`;
+				changeMap(9);
+				barchartDiv.transition()
+					.duration(50)
+					.style("opacity",0);
 				 createCountryBarchart(d);
 				createPieChart(d.country_code,i);});
 		
